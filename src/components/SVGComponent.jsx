@@ -1,9 +1,14 @@
 
-const SVGComponent = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" {...props}>
+const SVGComponent = () => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 200 200"
+        width="100%"
+        height="auto"
+    >
         <style type="text/css">
             {
-                '\n  #Pulse{fill: none; stroke: #D38911; stroke-width: 5; transform: rotateX(80deg);}\n  #side{fill:#875382;}\n  #front{fill:#CE85CA;}\n  #light{fill:#EBCBEA;}\n  .particles{fill:none;stroke:#DD913E;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:12,200; opacity:.7;}\n  .Particles_active .particles{ animation: sparks .7s; }\n  #light-mask rect{ animation: highlight 4s infinite; }\n\n  ._transformer{transform-box: fill-box; transform-origin: center;}\n\n  @keyframes highlight {\n    0% { transform: translate(-100px,0) rotate(-50deg); }\n    30%  { transform: translate(100px,0) rotate(-50deg); }\n    100%  { transform: translate(100px,0) rotate(-50deg); }\n  }\n  @keyframes idle {\n    0% { transform: translate(0,-5px); }\n    100%  { transform: translate(0,5px); }\n  }\n  @keyframes sparks {\n    0% { stroke-dasharray: 20,200; stroke-width: 5px; }\n    100%  { stroke-dasharray: 4,200; stroke-width: 0px; stroke-dashoffset: -180; }\n  }\n'
+                '\n  #Pulse{fill: none; stroke: #D38911; stroke-width: 5; transform: rotateX(80deg);}\n  #side{fill:#ffc0ba;}\n  #front{fill:#ff5454b5;}\n  #light{fill:#EBCBEA;}\n  .particles{fill:none;stroke:#DD913E;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:12,200; opacity:.7;}\n  .Particles_active .particles{ animation: sparks .7s; }\n  #light-mask rect{ animation: highlight 4s infinite; }\n\n  ._transformer{transform-box: fill-box; transform-origin: center;}\n\n  @keyframes highlight {\n    0% { transform: translate(-100px,0) rotate(-50deg); }\n    30%  { transform: translate(100px,0) rotate(-50deg); }\n    100%  { transform: translate(100px,0) rotate(-50deg); }\n  }\n  @keyframes idle {\n    0% { transform: translate(0,-5px); }\n    100%  { transform: translate(0,5px); }\n  }\n  @keyframes sparks {\n    0% { stroke-dasharray: 20,200; stroke-width: 5px; }\n    100%  { stroke-dasharray: 4,200; stroke-width: 0px; stroke-dashoffset: -180; }\n  }\n'
             }
         </style>
         <linearGradient id="light-gradient">

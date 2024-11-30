@@ -1,172 +1,216 @@
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import Timer from '../components/Timer'
-import QuizCard from '../components/QuizCard'
+import { motion } from 'framer-motion'
+import QuizApi from '../services/QuizApi'
+import GridLoader from 'react-spinners/GridLoader'
 
-// Styled components
-const PageWrapper = styled.div`
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-    padding: 20px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-`
-
-const Header = styled.h1`
-    color: #3a3a3a;
-    font-size: 32px;
-    margin-bottom: 20px;
+// Styled container leveraging Bootstrap grid system for responsiveness
+const QuizContainer = styled.div`
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem;
+    margin: 5rem auto;
     text-align: center;
-`
 
-const TimerWrapper = styled.div`
-    margin-top: 20px;
-    margin-bottom: 30px;
-`
-
-const QuizWrapper = styled.div`
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    padding: 20px;
-    width: 100%;
-    max-width: 600px;
-`
-
-const ResultButton = styled.button`
-    background-color: #6c63ff;
-    color: white;
-    font-weight: bold;
-    padding: 12px 30px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 30px;
-    width: 100%;
-    max-width: 200px;
-    &:hover {
-        background-color: #4e44c0;
+    @media (max-width: 768px) {
+        padding: 1rem;
     }
 `
 
-const QuizPage = () => {
+const Main = styled.main`
+    margin: 30px 0;
+`
+
+const QuestionText = styled.h2`
+    font-size: 2em;
+    color: #8f7e7c;
+    margin-bottom: 20px;
+
+    @media (max-width: 768px) {
+        font-size: 1.5em;
+    }
+`
+
+const Options = styled.div`
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-top: 20px;
+`
+
+const OptionItem = styled(motion.button)`
+    color: #8f7e7c;
+    background: #ff5454b5;
+    border-radius: 20px;
+    padding: 15px;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.6s, box-shadow 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+
+    &:hover {
+        background-color: #ffe0dc;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        padding: 10px;
+    }
+`
+
+const LoaderWrapper = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.8); // Slight overlay effect
+    z-index: 1000;
+`
+
+// Main QuizPage Component
+const QuizPage = ({ updateQuizState }) => {
     const { id } = useParams()
     const [quiz, setQuiz] = useState(null)
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
     const [score, setScore] = useState(0)
-    const [results, setResults] = useState([]) // Initialize results array
+    const [selectedAnswer, setSelectedAnswer] = useState(null)
+    const [correctAnswer, setCorrectAnswer] = useState(null)
+    const [results, setResults] = useState([]) // For tracking answers
+    const [timer, setTimer] = useState(10) // Timer for each question
+    const [isLoading, setIsLoading] = useState(true)
     const navigate = useNavigate()
 
     useEffect(() => {
-        // Fetch quiz data
-        fetch(`http://localhost:3000/quizzes/${id}`)
-            .then((response) => response.json())
-            .then((data) => {
+        const fetchData = async () => {
+            try {
+                const data = await QuizApi.getQuizById(id)
                 setQuiz(data)
-                // Initialize results for all questions
-                setResults(
-                    data.questions.map((question) => ({
-                        question: question.question,
-                        selectedAnswer: null,
-                        correctAnswer: question.answer,
-                        isCorrect: false
-                    }))
-                )
-            })
-            .catch((error) => console.error('Error fetching quiz:', error))
+                setIsLoading(false)
+            } catch (error) {
+                navigate("/404")
+            }
+        }
+
+        fetchData()
     }, [id])
 
-    if (!quiz) {
-        return <div>Loading quiz...</div>
+    // Timer logic
+    useEffect(() => {
+        if (!quiz) return
+
+        if (timer === 0) {
+            handleAnswer(null) // Auto-submit if timer hits 0
+        } else {
+            const timerId = setInterval(() => {
+                setTimer((prev) => prev - 1)
+            }, 1000)
+
+            return () => clearInterval(timerId)
+        }
+    }, [timer, quiz, currentQuestionIndex])
+
+    // Update parent state on changes
+    useEffect(() => {
+        if (quiz) {
+            updateQuizState({
+                currentQuestionIndex,
+                totalQuestions: quiz.questions.length,
+                score,
+                timer
+            })
+        }
+    }, [currentQuestionIndex, score, timer, quiz, updateQuizState])
+
+    // Ensure quiz data is loaded
+    // Ensure quiz data is loaded
+    if (isLoading) {
+        return (
+            <LoaderWrapper>
+                <GridLoader
+                    size={30}
+                    color="#ff5454b5"
+                    speedMultiplier={1.25}
+                />
+            </LoaderWrapper>
+        )
     }
 
     const currentQuestion = quiz.questions[currentQuestionIndex]
 
+    // Handle answer selection
     const handleAnswer = (selectedOption) => {
         const isCorrect = selectedOption === currentQuestion.answer
+        setSelectedAnswer(selectedOption)
+        setCorrectAnswer(currentQuestion.answer)
+
         if (isCorrect) {
             setScore((prev) => prev + 1)
         }
 
-        // Update the result of the current question
-        setResults((prevResults) =>
-            prevResults.map((result, index) =>
-                index === currentQuestionIndex
-                    ? {
-                          ...result,
-                          selectedAnswer: selectedOption,
-                          isCorrect
-                      }
-                    : result
-            )
-        )
+        const updatedResults = [
+            ...results,
+            {
+                question: currentQuestion.question,
+                selectedAnswer: selectedOption,
+                correctAnswer: currentQuestion.answer,
+                isCorrect
+            }
+        ]
+        setResults(updatedResults)
 
-        // Navigate to the next question or finish the quiz
+        // Navigate to the next question or finish quiz
         if (currentQuestionIndex < quiz.questions.length - 1) {
-            setCurrentQuestionIndex((prev) => prev + 1)
+            setTimeout(() => {
+                setSelectedAnswer(null)
+                setCorrectAnswer(null)
+                setCurrentQuestionIndex((prev) => prev + 1)
+                setTimer(10) // Reset timer for the next question
+            }, 1000)
         } else {
-            navigate('/result', {
-                state: { results, score, total: quiz.questions.length }
-            })
-        }
-    }
-
-    const handleTimeUp = () => {
-        // Mark the current question as unanswered
-        setResults((prevResults) =>
-            prevResults.map((result, index) =>
-                index === currentQuestionIndex
-                    ? {
-                          ...result,
-                          selectedAnswer: null,
-                          isCorrect: false
-                      }
-                    : result
-            )
-        )
-
-        // Navigate to the next question or finish the quiz
-        if (currentQuestionIndex < quiz.questions.length - 1) {
-            setCurrentQuestionIndex((prev) => prev + 1)
-        } else {
-            navigate('/result', {
-                state: { results, score, total: quiz.questions.length }
-            })
+            setTimeout(() => {
+                navigate('/result', {
+                    state: {
+                        results: updatedResults,
+                        score,
+                        total: quiz.questions.length
+                    }
+                })
+            }, 1000)
         }
     }
 
     return (
-        <PageWrapper>
-            <Header>{quiz.title} Quiz</Header>
-            <TimerWrapper>
-                <Timer
-                    key={currentQuestionIndex} // Reset timer when question changes
-                    duration={15}
-                    onTimeUp={handleTimeUp}
-                />
-            </TimerWrapper>
-            <QuizWrapper>
-                <QuizCard
-                    question={currentQuestion.question}
-                    options={currentQuestion.options}
-                    onSelect={handleAnswer}
-                />
-            </QuizWrapper>
-            {/* Conditional display for results */}
-            <ResultButton
-                onClick={() =>
-                    navigate('/result', {
-                        state: { results, score, total: quiz.questions.length }
-                    })
-                }
-            >
-                Finish Quiz
-            </ResultButton>
-        </PageWrapper>
+        <QuizContainer>
+            <Main>
+                <QuestionText>{currentQuestion.question}</QuestionText>
+                <Options>
+                    {currentQuestion.options.map((option, idx) => (
+                        <OptionItem
+                            key={idx}
+                            onClick={() => handleAnswer(option)}
+                            whileHover={{ scale: 1.05 }}
+                            animate={{
+                                backgroundColor:
+                                    selectedAnswer === option
+                                        ? option === correctAnswer
+                                            ? '#4caf50'
+                                            : '#e74c3c'
+                                        : '#ff5454b5'
+                            }}
+                        >
+                            {option}
+                        </OptionItem>
+                    ))}
+                </Options>
+            </Main>
+        </QuizContainer>
     )
 }
 

@@ -9,8 +9,8 @@ const GithubSVG = (props) => (
     >
         <defs>
             <linearGradient id="gh-mark-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="5%" stopColor="#a838bb" />
-                <stop offset="80%" stopColor="#51287c" />
+                <stop offset="5%" stopColor="#51287c" />
+                <stop offset="80%" stopColor="#e8635f" />
             </linearGradient>
         </defs>
         <path
