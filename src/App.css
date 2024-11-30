@@ -4,7 +4,7 @@
 }
 body {
   font-family: 'Open Sans', sans-serif;
-   background: #F5F5F5;
+  background: #F5F5F5;
 }
 a {
   text-decoration: none;
@@ -64,7 +64,6 @@ ul {
 }
 .landing-page header .logo {
   color: #875382;
-
   text-transform: uppercase;
   font-size: 20px;
 }
@@ -95,15 +94,6 @@ ul {
     margin-left: auto;
   }
 }
-.landing-page header .links li:last-child {
-  border-radius: 20px;
-  padding: 10px 20px;
-  color: #FFF;
-  background-color: #6c63ff;
-}
-.landing-page header .links li:not(:last-child):hover {
-  color: #6c63ff;
-}
 .landing-page .content .container {
   display: flex;
   align-items: center;
@@ -122,7 +112,7 @@ ul {
 @media (max-width: 767px) {
   .landing-page .content .info {
     text-align: center;
-    margin-bottom: 15px
+    margin-bottom: 15px;
   }
 }
 .landing-page .content .info h1 {
@@ -148,15 +138,17 @@ ul {
   max-width: 100%;
 }
 /* End Landing Page */
-svg{
-  height:90vh;
+
+/* SVG */
+svg {
+  height: 90vh;
   display: block;
   margin: auto;
-
 }
-#click_text{
+
+#click_text {
   position: absolute;
-  top:20px;
+  top: 20px;
   width: 99%;
   text-align: center;
   font-size: 32px;
@@ -166,16 +158,8 @@ svg{
   text-shadow: -2px 3px 3px #0000005c;
 }
 
-
-
-
-
-
-/* list item */
-/* Copy from here */
+/* List item styling */
 .fancy-shadow-card {
- //box-shadow: rgba(240, 46, 170, 0.4) -5px 5px, rgba(240, 46, 170, 0.3) -10px 10px, rgba(240, 46, 170, 0.2) -15px 15px, rgba(240, 46, 170, 0.1) -20px 20px, rgba(240, 46, 170, 0.05) -25px 25px;
-
   background: #EBCBEA;
   border-radius: 20px;
   padding: 25px;
@@ -186,13 +170,64 @@ svg{
 .card-title {
   font-weight: 800;
 }
-/* till here */
 
-
+/* List of Quizzes */
 .list-of-quizs {
-    width: 564px;
-    height: 456px;
-    display: grid;
-    gap: 24px; /*Desired gap between elements*/
-    /* background-color: #A729F5; */
+  width: 564px;
+  height: 456px;
+  display: grid;
+  gap: 24px;
+}
+
+/* Quiz Page Styling */
+.panel {
+  width: 610px;
+  min-height: 400px;
+  position: relative;
+  height: 400px;
+  padding: 15px;
+  background-color: #f1f1f1;
+  border: 5px solid #f59c02;
+  border-radius: 25px;
+  overflow: hidden;
+  -webkit-animation: slidein .5s 1 forwards;
+}
+
+/* Animation for quiz panel */
+@keyframes slidein {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Github Icon Styling */
+.icon-container {
+  background-color: #ffffff;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  text-decoration: none;
+  margin: 15px auto;
+  max-width: 80px;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.icon-container:hover {
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+}
+
+.icon-container svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.icon-container:hover .gh-mark {
+  fill: url(#gh-mark-grad); /* Applies if you use SVGs */
 }

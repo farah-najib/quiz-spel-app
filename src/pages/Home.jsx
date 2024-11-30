@@ -1,10 +1,12 @@
 import Icon from '../components/SVGComponent'
+import GithubSVG from '../components/GithubSVG'
 import ListItem from '../components/ListItem'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+
 
 const Home = () => {
     const [quizzes, setQuizzes] = useState([])
-
 
     useEffect(() => {
         // Fetch quizzes data from JSON server
@@ -28,7 +30,15 @@ const Home = () => {
                         <li>Home</li>
                         <li>About Us</li>
                         <li>Info</li>
-                        <li> Start quiz</li>
+                        <li>
+                            <a
+                                className="icon-container"
+                                href="https://github.com/farah-najib/quiz-spel-app"
+                                target="_blank"
+                            >
+                                <GithubSVG />
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </header>
@@ -38,7 +48,14 @@ const Home = () => {
                         <ul className="list-of-quizs">
                             {quizzes.map((quiz) => (
                                 <li key={quiz.id}>
-                                    <ListItem title={quiz.title} description={quiz.description} />
+                                    <Link
+                                        to={`/quiz/${quiz.id}`}
+                                    >
+                                        <ListItem
+                                            title={quiz.title}
+                                            description={quiz.description}
+                                        />
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
